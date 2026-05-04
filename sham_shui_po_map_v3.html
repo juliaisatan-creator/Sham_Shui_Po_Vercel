@@ -1,0 +1,387 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+  .wrap{background:#f5efe0;font-family:Georgia,serif;border-radius:12px;overflow:hidden;border:1.5px solid #c9a96e;}
+  .header{background:#1a3a2a;padding:14px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #c9a96e;gap:12px;}
+  .header-left{display:flex;flex-direction:column;gap:2px;}
+  .header-cn{font-size:26px;color:#f0d090;font-family:'Noto Serif TC','STSong',serif;font-weight:700;line-height:1;letter-spacing:4px;}
+  .header-en{font-size:10px;color:#9fc8a0;letter-spacing:3px;text-transform:uppercase;}
+  .header-sub{font-size:9px;color:#6a9870;letter-spacing:1px;}
+  .header-badge{background:#c9391a;color:#f5efe0;font-size:9px;padding:5px 10px;border-radius:3px;border:1px solid #a02a10;text-align:center;white-space:nowrap;}
+  .header-badge span{display:block;font-size:7px;color:#f0c090;letter-spacing:2px;margin-top:2px;}
+  .search-bar{background:#0f2a1a;padding:8px 14px;border-bottom:1.5px solid #c9a96e;display:flex;gap:8px;align-items:center;}
+  .search-wrap{flex:1;position:relative;}
+  .search-input{width:100%;background:#1a3a2a;border:1px solid #3a6a4a;color:#f0e8d0;font-size:12px;font-family:Georgia,serif;padding:7px 36px 7px 10px;border-radius:4px;outline:none;letter-spacing:0.5px;}
+  .search-input::placeholder{color:#5a8a6a;}
+  .search-input:focus{border-color:#c9a96e;}
+  .search-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:#7ab88a;font-size:13px;pointer-events:none;}
+  .search-clear{background:#2a5a3a;border:1px solid #3a6a4a;color:#9fc8a0;font-size:10px;padding:7px 12px;border-radius:4px;cursor:pointer;font-family:Georgia,serif;white-space:nowrap;}
+  .search-clear:hover{background:#3a7a4a;color:#f0d090;}
+  .search-results{position:absolute;top:100%;left:0;right:0;background:#1a3a2a;border:1px solid #c9a96e;border-radius:0 0 6px 6px;z-index:2000;max-height:220px;overflow-y:auto;display:none;}
+  .sr-item{padding:8px 12px;cursor:pointer;border-bottom:0.5px solid #2a5a3a;}
+  .sr-item:last-child{border-bottom:none;}
+  .sr-item:hover{background:#2a5a3a;}
+  .sr-name{font-size:12px;color:#f0d090;font-family:'Noto Serif TC',serif;}
+  .sr-sub{font-size:10px;color:#7ab88a;margin-top:2px;}
+  .sr-match{font-size:10px;color:#c9a96e;margin-top:2px;font-style:italic;}
+  .sr-empty{padding:12px;font-size:11px;color:#6a9870;text-align:center;font-style:italic;}
+  .body{display:grid;grid-template-columns:1fr 260px;min-height:480px;}
+  .map-col{position:relative;border-right:1.5px solid #c9a96e;}
+  #map{width:100%;height:460px;}
+  .legend{position:absolute;bottom:12px;left:12px;background:rgba(245,239,224,0.95);border:1px solid #c9a96e;border-radius:6px;padding:8px 10px;z-index:500;}
+  .legend-title{font-size:9px;letter-spacing:2px;color:#5a3a1a;text-transform:uppercase;margin-bottom:5px;}
+  .legend-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:10px;color:#3a2a10;}
+  .leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .side{background:#f5efe0;display:flex;flex-direction:column;overflow:hidden;}
+  .side-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:24px;text-align:center;gap:10px;}
+  .teacup-svg{opacity:0.2;}
+  .side-hint-cn{font-size:16px;color:#5a3a1a;font-family:'Noto Serif TC',serif;}
+  .side-hint-en{font-size:10px;color:#8a6a3a;letter-spacing:1.5px;line-height:1.6;}
+  .detail{display:flex;flex-direction:column;height:460px;overflow-y:auto;}
+  .img-gallery{position:relative;width:100%;height:140px;background:#1a3a2a;flex-shrink:0;overflow:hidden;}
+  .gallery-img{width:100%;height:140px;object-fit:cover;display:block;}
+  .gallery-placeholder{width:100%;height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:#1a3a2a;}
+  .gallery-placeholder-cn{font-size:22px;color:#f0d090;font-family:'Noto Serif TC',serif;letter-spacing:4px;}
+  .gallery-placeholder-en{font-size:9px;color:#4a7858;letter-spacing:2px;}
+  .img-spinner{width:20px;height:20px;border:2px solid #2a5a3a;border-top:2px solid #c9a96e;border-radius:50%;animation:spin 0.8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .img-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(26,58,42,0.8);color:#f0d090;border:none;font-size:16px;width:26px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:2px;z-index:10;}
+  .img-nav:hover{background:rgba(26,58,42,0.98);}
+  .img-prev{left:6px;}
+  .img-next{right:6px;}
+  .img-counter{position:absolute;bottom:6px;right:8px;background:rgba(26,58,42,0.7);color:#f0d090;font-size:9px;padding:2px 6px;border-radius:10px;letter-spacing:1px;}
+  .detail-header{background:#1a3a2a;padding:10px 12px 8px;}
+  .detail-num{font-size:8px;color:#9fc8a0;letter-spacing:3px;margin-bottom:2px;}
+  .detail-name{font-size:13px;font-weight:500;color:#f0d090;font-family:'Noto Serif TC',serif;line-height:1.3;}
+  .detail-name-en{font-size:10px;color:#7ab88a;margin-top:1px;letter-spacing:0.5px;}
+  .detail-body{padding:10px 12px;display:flex;flex-direction:column;gap:9px;}
+  .year-badge{display:inline-block;background:#c9391a;color:#f5efe0;font-size:8px;padding:2px 7px;border-radius:2px;letter-spacing:1px;}
+  .section-label{font-size:7px;letter-spacing:3px;color:#8a6a3a;text-transform:uppercase;margin-bottom:3px;border-bottom:0.5px solid #c9a96e;padding-bottom:2px;}
+  .heritage-p{font-size:10.5px;color:#3a2a10;line-height:1.65;}
+  .food-list{display:flex;flex-direction:column;gap:3px;}
+  .food-item{display:flex;align-items:flex-start;gap:5px;font-size:10.5px;color:#3a2a10;line-height:1.4;}
+  .food-dot{width:4px;height:4px;border-radius:50%;background:#c9391a;flex-shrink:0;margin-top:4px;}
+  .food-item.highlight .food-dot{background:#f0a030;width:6px;height:6px;margin-top:3px;}
+  .food-item.highlight span{color:#854F0B;font-weight:500;}
+  .rating-row{display:flex;align-items:center;gap:5px;}
+  .stars-txt{color:#c9391a;font-size:11px;}
+  .rating-num{font-size:10px;color:#5a3a1a;}
+  .hours-txt,.addr-txt{font-size:9.5px;color:#7a5a2a;}
+  .close-x{background:none;border:1px solid #4a7858;color:#9fc8a0;font-size:12px;cursor:pointer;width:22px;height:22px;border-radius:3px;display:flex;align-items:center;justify-content:center;}
+  .close-x:hover{background:#2a5a3a;}
+  .footer{background:#1a3a2a;padding:7px 16px;display:flex;align-items:center;justify-content:space-between;border-top:1.5px solid #c9a96e;}
+  .footer-quote{font-size:10px;color:#7ab88a;font-family:'Noto Serif TC',serif;font-style:italic;}
+  .footer-en{font-size:8px;color:#4a7858;letter-spacing:1px;}
+</style>
+
+<div class="wrap">
+  <div class="header">
+    <div class="header-left">
+      <div class="header-cn">深水埗茶餐廳</div>
+      <div class="header-en">Sham Shui Po · Cha Chaan Teng Map</div>
+      <div class="header-sub">老店 · 好味 · 人情味 &nbsp;·&nbsp; Old Shops · Good Food · Local Heart</div>
+    </div>
+    <div class="header-badge">HERITAGE<span>茶餐廳文化</span></div>
+  </div>
+
+  <div class="search-bar">
+    <div class="search-wrap">
+      <input class="search-input" id="search-input" type="text" placeholder="Search cafes or dishes… e.g. milk tea, pineapple bun, 合益泰"/>
+      <span class="search-icon">⌕</span>
+      <div class="search-results" id="search-results"></div>
+    </div>
+    <button class="search-clear" id="search-clear">Clear</button>
+  </div>
+
+  <div class="body">
+    <div class="map-col">
+      <div id="map"></div>
+      <div class="legend">
+        <div class="legend-title">Map legend</div>
+        <div class="legend-row"><div class="leg-dot" style="background:#c9391a;border:1.5px solid #8a1a00;"></div>50+ years heritage</div>
+        <div class="legend-row"><div class="leg-dot" style="background:#1a3a2a;border:1.5px solid #c9a96e;"></div>Classic neighbourhood teng</div>
+      </div>
+    </div>
+    <div class="side" id="side">
+      <div class="side-empty" id="side-empty">
+        <svg class="teacup-svg" width="60" height="60" viewBox="0 0 64 64" fill="none">
+          <ellipse cx="32" cy="44" rx="22" ry="8" stroke="#5a3a1a" stroke-width="1.5"/>
+          <path d="M10 28 Q10 44 32 44 Q54 44 54 28 L50 18 Q32 14 14 18 Z" stroke="#5a3a1a" stroke-width="1.5" fill="none"/>
+          <path d="M54 22 Q64 22 64 30 Q64 38 54 36" stroke="#5a3a1a" stroke-width="1.5" fill="none"/>
+          <path d="M20 18 Q22 10 24 18" stroke="#5a3a1a" stroke-width="1" fill="none"/>
+          <path d="M30 16 Q32 8 34 16" stroke="#5a3a1a" stroke-width="1" fill="none"/>
+          <path d="M40 18 Q42 10 44 18" stroke="#5a3a1a" stroke-width="1" fill="none"/>
+        </svg>
+        <div class="side-hint-cn">點擊地圖上的標記</div>
+        <div class="side-hint-en">Search a cafe or dish above,<br>or click a marker to explore</div>
+      </div>
+      <div class="detail" id="detail" style="display:none;">
+        <div class="img-gallery" id="img-gallery">
+          <div class="gallery-placeholder" id="gallery-placeholder">
+            <div class="img-spinner" id="img-spinner"></div>
+            <div class="gallery-placeholder-cn" id="placeholder-cn"></div>
+            <div class="gallery-placeholder-en" id="placeholder-en">Loading photos…</div>
+          </div>
+          <img class="gallery-img" id="gallery-img" style="display:none;" alt=""/>
+          <button class="img-nav img-prev" id="img-prev" style="display:none;">‹</button>
+          <button class="img-nav img-next" id="img-next" style="display:none;">›</button>
+          <div class="img-counter" id="img-counter" style="display:none;"></div>
+        </div>
+        <div class="detail-header">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+              <div class="detail-num" id="d-num"></div>
+              <div class="detail-name" id="d-name"></div>
+              <div class="detail-name-en" id="d-name-en"></div>
+            </div>
+            <button class="close-x" id="close-btn">×</button>
+          </div>
+        </div>
+        <div class="detail-body">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span class="year-badge" id="d-year"></span>
+            <div class="rating-row"><span class="stars-txt" id="d-stars"></span><span class="rating-num" id="d-rating"></span></div>
+          </div>
+          <div class="addr-txt" id="d-addr"></div>
+          <div><div class="section-label">Heritage &amp; Story</div><div class="heritage-p" id="d-heritage"></div></div>
+          <div><div class="section-label">Must-Order</div><div class="food-list" id="d-food"></div></div>
+          <div><div class="section-label">Hours</div><div class="hours-txt" id="d-hours"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>
+      <div class="footer-quote">一杯奶茶，一段回憶。</div>
+      <div class="footer-en">A cup of milk tea, a memory of the city.</div>
+    </div>
+    <div style="font-size:8px;color:#4a7858;font-family:Georgia;text-align:right;letter-spacing:1px;">© Sham Shui Po<br>Heritage Food Trail</div>
+  </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const cafes = [
+  { num:1, name:"香港風味", nameEn:"Hong Kong Tastes", addr:"62 Castle Peak Rd", lat:22.3341, lng:114.1621, year:"Est. 1980s", rating:3.9, reviews:1154, tier:"classic",
+    searchTerms:"Hong Kong Tastes cha chaan teng Sham Shui Po interior",
+    heritage:"A long-standing neighbourhood staple on Castle Peak Road, recently renovated while preserving its old-school soul. The afternoon tea tradition draws regulars from the nearby Apliu Street electronics market — a true snapshot of working-class Sham Shui Po life.",
+    food:["Deep-fried raw chicken thigh (生炸雞髀)","Cheeseburger with sunny-side egg","Curry katsu pork omurice","Red bean ice drink (紅豆冰)"]},
+  { num:2, name:"九龍冰室", nameEn:"Kowloon Restaurant", addr:"282 Yu Chau St", lat:22.3307, lng:114.1606, year:"Est. 1960s", rating:3.4, reviews:1372, tier:"classic",
+    searchTerms:"Kowloon Restaurant pineapple bun bakery Sham Shui Po Yu Chau Street",
+    heritage:"A cornerstone of Yu Chau Street that doubles as a beloved bakery. Claims the largest pineapple bun in Sham Shui Po — fresh batches emerge throughout the day. Served the fabric merchants and hawkers of this neighbourhood for generations.",
+    food:["Giant pineapple bun with chilled butter (波羅包)","Egg tarts (蛋撻)","Cocktail bun (雞尾包)","Yuen Yeung — coffee-milk tea blend (鴛鴦)"]},
+  { num:3, name:"新香園 近記", nameEn:"Sun Heung Yuen / Kin Kee", addr:"38A Kweilin St", lat:22.3299, lng:114.1609, year:"Est. 1950s", rating:3.8, reviews:1822, tier:"heritage",
+    searchTerms:"Sun Heung Yuen Kin Kee cha chaan teng Kweilin Street beef egg sandwich milk tea",
+    heritage:"One of Hong Kong's most legendary cha chaan tengs, tracing back to a humble dai pai dong stall in the 1950s. Featured in countless food guides, its worn formica tables are an institution. The silky milk tea strained through a well-seasoned sock is a rite of passage.",
+    food:["Beef & egg sandwich (牛肉蛋治) — the unmissable signature","Silky HK-style milk tea (絲襪奶茶)","French toast (西多士)","Tomato beef noodle soup"]},
+  { num:4, name:"新恆源", nameEn:"Sun Hang Yuen", addr:"186 Yu Chau St", lat:22.3291, lng:114.1626, year:"Est. 1960s", rating:3.8, reviews:1026, tier:"classic",
+    searchTerms:"Sun Hang Yuen cha chaan teng Yu Chau Street Sham Shui Po beef sandwich",
+    heritage:"Family-owned, with roots in the old dai pai dong culture of outdoor street dining. Uses fresh-sliced beef instead of standard corned beef — a detail that earns devoted regulars. Fast, affordable, and unpretentious: the true spirit of Sham Shui Po.",
+    food:["Fresh beef & egg sandwich — the house specialty","Silky HK milk tea (絲襪奶茶)","Club sandwich (公司三文治)","Morning set noodles + toast"]},
+  { num:5, name:"海港冰室", nameEn:"Harbour Cafe", addr:"56A Yen Chow St", lat:22.3305, lng:114.1600, year:"Est. 1970s", rating:3.4, reviews:546, tier:"classic",
+    searchTerms:"Harbour Cafe bing sutt Sham Shui Po Yen Chow Street",
+    heritage:"One of the longer-running tengs on Yen Chow Street, serving the fabric merchants and electronics traders of the neighbourhood for decades. Known for a wide Cantonese menu and daily specials of freshly deep-fried fish from the morning market.",
+    food:["Deep-fried fresh fish — daily market special","Cantonese-style noodles","Baked rice (焗飯)","HK lemon tea (熱/凍檸茶)"]},
+  { num:6, name:"檸檬茶餐廳", nameEn:"Lemon Cafe", addr:"246-248 Lai Chi Kok Rd", lat:22.3272, lng:114.1626, year:"Est. 1990s", rating:3.7, reviews:189, tier:"classic",
+    searchTerms:"Lemon Cafe tea restaurant Sham Shui Po Lai Chi Kok Road",
+    heritage:"A bright neighbourhood anchor on Lai Chi Kok Road, famous for staying open on public holidays when the street goes quiet. Its unusually spacious seating — rare in Hong Kong — makes it a beloved gathering spot for families and groups after the nearby wet market.",
+    food:["Peanut butter French toast (花生醬西多士)","Sizzling ribeye with black pepper sauce","Sizzling fish fillet pork chop rice","HK milk tea (港式奶茶)"]},
+  { num:7, name:"紅葉冰室", nameEn:"Red Leaf Cafe", addr:"214 Yu Chau St", lat:22.3295, lng:114.1623, year:"Est. 1980s", rating:3.3, reviews:184, tier:"classic",
+    searchTerms:"Red Leaf Cafe bing sutt Sham Shui Po Yu Chau Street morning set",
+    heritage:"A cash-only neighbourhood cafe beloved for insane value. Massive morning sets carry on the tradition of filling Sham Shui Po's working community before a long day. Packed at lunchtime — arrive early or expect to share a table.",
+    food:["Well-seasoned fried chicken thigh (炸雞髀)","Morning set: noodles + 2 eggs + toast + drink","Afternoon tea set (下午茶餐)","Pork chop noodle (豬扒麵)"]},
+  { num:8, name:"合益泰小食", nameEn:"Hop Yik Tai", addr:"121 Kweilin St", lat:22.3305, lng:114.1612, year:"Est. 1950s", rating:4.0, reviews:3242, tier:"heritage",
+    searchTerms:"Hop Yik Tai cheung fun rice noodle roll Kweilin Street Sham Shui Po",
+    heritage:"A Sham Shui Po legend — a cheung fun specialist woven into the soul of Kweilin Street since the 1950s. The triple-sauce combo (soy + sweet + peanut) is unique to this shop. Food writers and locals agree: always a queue, always worth it.",
+    food:["Silky steamed rice noodle rolls (腸粉) — must-order","Raw beef cheung fun (牛肉腸粉)","Congee (粥)","Siu mai (燒賣)"]}
+];
+
+const photoCache = {};
+let currentCafe = null, imgList = [], imgIndex = 0;
+let mapObj, markers = [], active = null;
+
+function stars(r){return '★'.repeat(Math.floor(r))+(r%1>=0.5?'☆':'')+'☆'.repeat(5-Math.ceil(r));}
+function tierColor(t){return t==='heritage'?'#c9391a':'#1a3a2a';}
+
+function makeIcon(c, isActive){
+  const col = tierColor(c.tier), sz = isActive?38:30, anchor = isActive?19:15;
+  return L.divIcon({
+    className:'',
+    html:`<svg width="${sz}" height="${Math.round(sz*1.2)}" viewBox="0 0 32 38" fill="none">
+      <path d="M16 2C8 2 2 8.5 2 16.5C2 26 16 36 16 36C16 36 30 26 30 16.5C30 8.5 24 2 16 2Z" fill="${col}" stroke="${isActive?'#f0d090':'#f5efe0'}" stroke-width="${isActive?2.5:1.5}"/>
+      <text x="16" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#f5efe0" font-family="Georgia,serif">${c.num}</text>
+    </svg>`,
+    iconSize:[sz,Math.round(sz*1.2)], iconAnchor:[anchor,Math.round(sz*1.2)]
+  });
+}
+
+async function fetchPhotos(cafe) {
+  if (photoCache[cafe.num]) return photoCache[cafe.num];
+  try {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:400,
+        tools:[{type:"web_search_20250305",name:"web_search"}],
+        messages:[{role:"user",content:`Find 2-3 real working image URLs (jpg or png, direct links) showing the interior or exterior of "${cafe.nameEn}" (${cafe.name}) cha chaan teng at ${cafe.addr}, Sham Shui Po, Hong Kong. Search: ${cafe.searchTerms}. Return ONLY a JSON array of direct image URLs, no other text. Only include URLs that are very likely to work (from flickr staticflickr.com, wikimedia commons, openstreetmap, or well-known HK food blogs). If unsure, return [].`}]
+      })
+    });
+    const data = await resp.json();
+    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    const match = text.match(/\[[\s\S]*?\]/);
+    if (match) {
+      const urls = JSON.parse(match[0]).filter(u=>typeof u==='string'&&u.startsWith('http'));
+      photoCache[cafe.num] = urls.length ? urls : null;
+      return photoCache[cafe.num];
+    }
+  } catch(e){}
+  photoCache[cafe.num] = null;
+  return null;
+}
+
+function showPlaceholder(cafe, loading) {
+  document.getElementById('gallery-img').style.display = 'none';
+  document.getElementById('gallery-placeholder').style.display = 'flex';
+  document.getElementById('placeholder-cn').textContent = loading ? '' : cafe.name;
+  document.getElementById('placeholder-en').textContent = loading ? 'Loading photos…' : cafe.nameEn;
+  document.getElementById('img-spinner').style.display = loading ? 'block' : 'none';
+  document.getElementById('img-prev').style.display = 'none';
+  document.getElementById('img-next').style.display = 'none';
+  document.getElementById('img-counter').style.display = 'none';
+}
+
+function tryShowImage(urls, index, cafe) {
+  if (!urls || !urls.length) { showPlaceholder(cafe, false); return; }
+  const img = document.getElementById('gallery-img');
+  const tmp = new Image();
+  tmp.crossOrigin = 'anonymous';
+  tmp.onload = function() {
+    document.getElementById('gallery-placeholder').style.display = 'none';
+    img.src = urls[index];
+    img.style.display = 'block';
+    const multi = urls.length > 1;
+    document.getElementById('img-prev').style.display = multi ? 'flex' : 'none';
+    document.getElementById('img-next').style.display = multi ? 'flex' : 'none';
+    const ctr = document.getElementById('img-counter');
+    if (multi) { ctr.textContent = `${index+1} / ${urls.length}`; ctr.style.display = 'block'; }
+    else ctr.style.display = 'none';
+  };
+  tmp.onerror = function() {
+    const next = index + 1;
+    if (next < urls.length) tryShowImage(urls, next, cafe);
+    else showPlaceholder(cafe, false);
+  };
+  tmp.src = urls[index];
+}
+
+async function loadGallery(cafe) {
+  showPlaceholder(cafe, true);
+  imgList = [];
+  imgIndex = 0;
+  const urls = await fetchPhotos(cafe);
+  if (currentCafe && currentCafe.num !== cafe.num) return;
+  imgList = urls || [];
+  tryShowImage(imgList.length ? imgList : null, 0, cafe);
+}
+
+function showCafe(c, highlightFood) {
+  currentCafe = c;
+  document.getElementById('side-empty').style.display = 'none';
+  document.getElementById('detail').style.display = 'flex';
+  document.getElementById('d-num').textContent = `No. ${c.num} · ${c.tier==='heritage'?'50+ years heritage':'neighbourhood classic'}`;
+  document.getElementById('d-name').textContent = c.name;
+  document.getElementById('d-name-en').textContent = c.nameEn;
+  document.getElementById('d-year').textContent = c.year;
+  document.getElementById('d-addr').textContent = c.addr + ', Sham Shui Po';
+  document.getElementById('d-stars').textContent = stars(c.rating);
+  document.getElementById('d-rating').textContent = `${c.rating} (${c.reviews.toLocaleString()} reviews)`;
+  document.getElementById('d-heritage').textContent = c.heritage;
+  document.getElementById('d-hours').textContent = 'Daily from 6:00–6:30 AM · Closes 9–11 PM';
+  const fl = document.getElementById('d-food');
+  fl.innerHTML = '';
+  c.food.forEach(f => {
+    const isMatch = highlightFood && f.toLowerCase().includes(highlightFood.toLowerCase());
+    fl.innerHTML += `<div class="food-item${isMatch?' highlight':''}"><div class="food-dot"></div><span>${f}</span></div>`;
+  });
+  loadGallery(c);
+}
+
+function selectCafe(c, m, highlightFood) {
+  if (active && active.marker !== m) active.marker.setIcon(makeIcon(active.cafe, false));
+  m.setIcon(makeIcon(c, true));
+  active = {cafe:c, marker:m};
+  showCafe(c, highlightFood);
+}
+
+function searchCafes(q) {
+  if (!q.trim()) return [];
+  const ql = q.toLowerCase();
+  return cafes.reduce((acc, c) => {
+    const nameMatch = c.name.includes(q) || c.nameEn.toLowerCase().includes(ql);
+    const matchedFoods = c.food.filter(f => f.toLowerCase().includes(ql));
+    if (nameMatch || matchedFoods.length) acc.push({cafe:c, nameMatch, matchedFoods});
+    return acc;
+  }, []);
+}
+
+window.addEventListener('load', function() {
+  mapObj = L.map('map', {zoomControl:true}).setView([22.3300, 114.1612], 15);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap', maxZoom:19}).addTo(mapObj);
+
+  cafes.forEach(c => {
+    const m = L.marker([c.lat, c.lng], {icon: makeIcon(c, false)}).addTo(mapObj);
+    markers.push({cafe:c, marker:m});
+    m.on('click', () => selectCafe(c, m, null));
+  });
+
+  document.getElementById('img-prev').addEventListener('click', () => {
+    if (!imgList.length) return;
+    imgIndex = (imgIndex - 1 + imgList.length) % imgList.length;
+    tryShowImage(imgList, imgIndex, currentCafe);
+  });
+  document.getElementById('img-next').addEventListener('click', () => {
+    if (!imgList.length) return;
+    imgIndex = (imgIndex + 1) % imgList.length;
+    tryShowImage(imgList, imgIndex, currentCafe);
+  });
+  document.getElementById('close-btn').addEventListener('click', () => {
+    document.getElementById('side-empty').style.display = 'flex';
+    document.getElementById('detail').style.display = 'none';
+    currentCafe = null;
+    if (active) { active.marker.setIcon(makeIcon(active.cafe, false)); active = null; }
+  });
+
+  const inp = document.getElementById('search-input');
+  const res = document.getElementById('search-results');
+  inp.addEventListener('input', () => {
+    const q = inp.value.trim();
+    if (!q) { res.style.display='none'; return; }
+    const found = searchCafes(q);
+    if (!found.length) { res.innerHTML=`<div class="sr-empty">No results for "${q}"</div>`; res.style.display='block'; return; }
+    res.innerHTML = '';
+    found.forEach(({cafe:c, matchedFoods}) => {
+      const div = document.createElement('div');
+      div.className = 'sr-item';
+      const matchLine = matchedFoods.length ? `<div class="sr-match">Dish: ${matchedFoods[0]}</div>` : '';
+      div.innerHTML = `<div class="sr-name">${c.num}. ${c.name}</div><div class="sr-sub">${c.nameEn} · ${c.addr}</div>${matchLine}`;
+      div.addEventListener('click', () => {
+        res.style.display = 'none';
+        inp.value = c.nameEn;
+        const mObj = markers.find(m => m.cafe === c);
+        if (mObj) selectCafe(c, mObj.marker, matchedFoods.length ? matchedFoods[0] : null);
+        mapObj.setView([c.lat, c.lng], 16);
+      });
+      res.appendChild(div);
+    });
+    res.style.display = 'block';
+  });
+  inp.addEventListener('keydown', e => { if(e.key==='Escape') res.style.display='none'; });
+  document.addEventListener('click', e => { if(!e.target.closest('.search-wrap')) res.style.display='none'; });
+  document.getElementById('search-clear').addEventListener('click', () => { inp.value=''; res.style.display='none'; });
+});
+</script>
